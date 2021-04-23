@@ -4,6 +4,7 @@ var $status = $("#status");
 var $fen = $("#fen");
 var $pgn = $("#pgn");
 var $mvs = $("#mvs");
+var $points = $("#points");
 
 function onDragStart(source, piece, position, orientation) {
   // do not pick up pieces if the game is over
@@ -22,9 +23,12 @@ function makeRandomMove() {
   // game over
   if (possibleMoves.length === 0) return;
 
+  console.log(search(2));
   var randomIdx = Math.floor(Math.random() * possibleMoves.length);
   game.move(possibleMoves[randomIdx]);
   board.position(game.fen());
+
+  updateStatus();
 }
 
 function onDrop(source, target) {
@@ -75,7 +79,9 @@ function updateStatus() {
       status += ", " + moveColor + " is in check";
     }
   }
+  let points = evaluate();
 
+  $points.html(points);
   $status.html(status);
   $fen.html(game.fen());
   $pgn.html(game.pgn());
