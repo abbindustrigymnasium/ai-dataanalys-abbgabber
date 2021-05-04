@@ -23,9 +23,7 @@ function makeRandomMove() {
   // game over
   if (possibleMoves.length === 0) return;
 
-  console.log(initSearch(3));
-  var randomIdx = Math.floor(Math.random() * possibleMoves.length);
-  game.move(possibleMoves[randomIdx]);
+  game.move(findBestMove(3));
   board.position(game.fen());
 
   updateStatus();

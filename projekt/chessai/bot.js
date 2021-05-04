@@ -1,14 +1,12 @@
 function getPieces() {
-  pieces = [];
+  let pieces = [];
 
   for (i in game.SQUARES) {
     try {
       pieces.push(
         game.get(game.SQUARES[i]).color + game.get(game.SQUARES[i]).type
       );
-    } catch (err) {
-      //   console.log(err);
-    }
+    } catch (err) {}
   }
   return pieces;
 }
@@ -21,42 +19,50 @@ function evaluate() {
     r: 500,
     q: 900,
   };
-  points = { w: 0, b: 0 };
+  let points = { w: 0, b: 0 };
 
-  pieces = getPieces();
+  let pieces = getPieces();
   for (i in pieces) {
     if (pieces[i].charAt(1) !== "k") {
-      color = pieces[i].charAt(0);
-      c = pieces[i].charAt(1);
+      let color = pieces[i].charAt(0);
+      let c = pieces[i].charAt(1);
       points[color] += pointValue[c];
     }
   }
-  evalution = points["w"] - points["b"];
+  let evalution = points["w"] - points["b"];
 
   return evalution;
 }
 
-function initSearch(depth) {
-  possibleEvals = [];
-  search(depth);
-  return Math.max(...possibleEvals);
+function findBestMove(depth) {
+  let bestEvalution = -Infinity;
+  let bestMove = null;
+  let moves = game.moves();
+
+  for (var i = 0; i < moves.length; i++) {
+    let move = moves[i];
+    game.move(move);
+    value = -minimax(depth - 1);
+    game.undo();
+    if (value >= bestMove) {
+      bestEvalution = value;
+      bestMove = move;
+    }
+  }
+  return bestMove;
 }
 
-function search(depth) {
-  moves = game.moves();
-  bestEvalution = -Infinity;
-
+function minimax(depth) {
   if (depth == 0) {
-    // console.log(evaluate());
     return evaluate();
   }
-  if (moves === 0) return;
-  moves.forEach((move) => {
-    game.move(move);
-    evalution = -search(depth - 1);
-    possibleEvals.push(evalution);
-    game.undo(); //move as arg
-  });
+  let bestMove = -Infinity;
+  let moves = game.moves();
 
-  return evalution;
+  for (var i = 0; i < moves.length; i++) {
+    game.move(moves[i]);
+    bestMove = Math.max(bestMove, minimax(depth - 1));
+    game.undo();
+  }
+  return bestMove;
 }
