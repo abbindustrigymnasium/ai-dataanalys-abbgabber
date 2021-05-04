@@ -36,29 +36,27 @@ function evaluate() {
   return evalution;
 }
 
+function initSearch(depth) {
+  possibleEvals = [];
+  search(depth);
+  return Math.max(...possibleEvals);
+}
+
 function search(depth) {
   moves = game.moves();
   bestEvalution = -Infinity;
-  possibleEvals = [];
 
   if (depth == 0) {
     // console.log(evaluate());
     return evaluate();
   }
   if (moves === 0) return;
-
-  // console.log(moves);
   moves.forEach((move) => {
-    // console.log(game.move(moves[move]));
     game.move(move);
     evalution = -search(depth - 1);
-    console.log("Evalution: " + evalution);
-    // console.log("Best Evalution: " + this.bestEvalution);
-    bestEvalution = Math.max(evalution, bestEvalution);
+    possibleEvals.push(evalution);
     game.undo(); //move as arg
   });
-  // bestEvalution = Math.max(possibleEvals);
-  // console.log(possibleEvals);
-  // console.log(bestEvalution);
-  return bestEvalution;
+
+  return evalution;
 }
